@@ -40,10 +40,10 @@ Vorbedingungen - ziehmlich keine
 	- cp root.tar.gz ../firmware/images/root.tgz
 	- cd ../firmware/images/
 	- cp ../META-INF/* .
-	- cd .. ; zip -r -9 firmware_hacked.img META-INF images sbin
+	- cd .. ; zip -r -9 firmware_modified.img META-INF images sbin
 
 - auf dem SysAp
-	- Update starten mit der neuen "firmware_hacked.img"
+	- Update starten mit der neuen "firmware_modified.img"
 
 - Have Fun!
 	- ssh -l root $BOXIP
