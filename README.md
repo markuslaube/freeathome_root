@@ -18,14 +18,12 @@ Vorbedingungen - ziehmlich keine
 - Aktuelle Firmware bearbeiten:
 	- mkdir firmware
 	- mkdir root_tgz
-	- mkdir rescue_tgz
 	- cp $firmware.img firmware/
 	- cd firmware
 	- unzip $firmware.img
 	- cd images
 	- rm checksum2*
 	- mv root.tgz ../../root_tgz/
-	- mv rescue.tgz ../../rescue_tgz
 	- cd ../../root_tgz/
 	- gzip -d root.tgz
 	- weiter als "root"
@@ -40,13 +38,6 @@ Vorbedingungen - ziehmlich keine
 	=== ende root erforderlich ===
 	- gzip -9 root.tar
 	- cp root.tar.gz ../firmware/images/root.tgz
-	- cd ../rescue_tgz/
-	- gzip -d rescue.tgz
-	- tar -vxpzf rescue.tar etc/gnupg/pubring.gpg
-	- cp ../root_tgz/etc/gnupg/pubring.gpg  etc/gnupg/pubring.gpg
-	- tar -vupf rescue.tar etc/gnupg/pubring.gpg
-	- gzip -9 rescue.tar
-	- cp rescue.tar.gz ../firmware/images/rescue.tgz
 	- cd ../firmware/images/
 	- cp ../META-INF/* .
 	- cd .. ; zip -r -9 firmware_hacked.img META-INF images sbin
