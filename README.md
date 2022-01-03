@@ -1,5 +1,5 @@
 # freeathome_root
-HowTo "rooting" ABB / B+J Free@Home SysAP 1.0 UND SysAP 2.0
+HowTo "rooting" ABB / B+J Free@Home SysAP 1.0 UND SysAP 2.0 mit Version <= 2.6.3 
 
 Todo:
 
