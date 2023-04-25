@@ -28,13 +28,14 @@ Vorbedingungen - ziehmlich keine
 	- gzip -d root.tgz
 	- weiter als "root"
 	=== ab hier ist root erforderlich ===
-	- tar -vxpf root.tar usr/sbin/check-key.sh etc/gnupg/pubring.gpg root/.ssh/authorized_keys
+	- tar -vxp -f root.tar ./usr/sbin/check-key.sh ./etc/gnupg/pubring.gpg ./root/.ssh/authorized_keys
 
 			- authorized_keys anpassen
 			- Optional: pubring austauschen mit eigenen 
 			- Optional: check-key anpassen ( Test auf /static/locked auskommentieren ) aber nur wenn man aus irgendwelchen Gründen telnet per Tastendruck haben will)
 
-	- tar -vupf root.tar ./usr/sbin/check-key.sh ./etc/gnupg/pubring.gpg ./root/.ssh/authorized_keys
+        - tar --delete -f root.tar ./usr/sbin/check-key.sh ./etc/gnupg/pubring.gpg ./root/.ssh/authorized_keys
+        - tar -vup -f root.tar ./usr/sbin/check-key.sh ./etc/gnupg/pubring.gpg ./root/.ssh/authorized_keys
 	=== ende root erforderlich ===
 	- gzip -9 root.tar
 	- cp root.tar.gz ../firmware/images/root.tgz
