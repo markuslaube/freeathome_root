@@ -3,17 +3,17 @@
 # Licence: GNU GENERAL PUBLIC LICENSE 3 - https://github.com/markuslaube/loxone/blob/main/LICENSE
 # Disclaimer: Verwendung nur in Übereinstimmung mit den Lizenzbestimmungen des Herstellers der Original-Firmware bzw. dessen ausdrücklichen Zustimmung  zulässig
 #
-# Verzeichniss anlegen
+# Variables:
 CRAKER="`whoami`"                                                      # change with your nickename
 ROOTKEY="/root/.ssh/authorized_keys"                                   # change with path to ssh key
 CRAKPATH="/opt/freeathome"                                             # change with working path information
 SIGNKEY="${CRAKPATH}/free-at-home-public.asc"                          # change with path to gpg key
-
 SYSAP_TEMPDIR="sysap_temp"                                             # tempdirname
 VERSION="$( tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo '' )"   # Random Version Number before knwo version
-URL="$1"                                                               # Ship me the firmware file via url
+URL="$1"                                                               # Ship me the firmware file via url in parameter1
 #
 #
+# Verzeichniss anlegen
 mkdir -p ${CRAKPATH}/${SYSAP_TEMPDIR}/${RANDOM}/tmp/
 mkdir -p ${CRAKPATH}/${SYSAP_TEMPDIR}/downloads/
 cd ${CRAKPATH}/${SYSAP_TEMPDIR}/downloads/
