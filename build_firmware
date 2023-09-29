@@ -1,0 +1,79 @@
+# Verzeichniss anlegen
+CRAKER="`whoami`"                                                      # change with your nickename
+ROOTKEY="/root/.ssh/authorized_keys"                                   # change with path to ssh key
+CRAKPATH="/opt/freeathome"                                             # change with working path information
+SIGNKEY="${CRAKPATH}/free-at-home-public.asc"                          # change with path to gpg key
+
+SYSAP_TEMPDIR="sysap_temp"                                             # tempdirname
+VERSION="$( tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo '' )"   # Random Version Number before knwo version
+URL="$1"                                                               # Ship me the file via url
+#
+#
+mkdir -p ${CRAKPATH}/${SYSAP_TEMPDIR}/${RANDOM}/tmp/
+mkdir -p ${CRAKPATH}/${SYSAP_TEMPDIR}/downloads/
+cd ${CRAKPATH}/${SYSAP_TEMPDIR}/downloads/
+wget -O download_${SYSAP_TEMPDIR}_${RANDOM}_abb.zip "$URL"
+cd ${CRAKPATH}/${SYSAP_TEMPDIR}/${RANDOM}/tmp/
+cp ${CRAKPATH}/${SYSAP_TEMPDIR}/downloads/download_${SYSAP_TEMPDIR}_${RANDOM}_abb.zip ${SYSAP_TEMPDIR}_${RANDOM}_ABB.zip
+unzip ${SYSAP_TEMPDIR}_${RANDOM}_ABB.zip
+originimagefile="$(find . -name "*.img")"
+mv ${originimagefile} ../${SYSAP_TEMPDIR}_${RANDOM}_ABB.img
+cd ..
+rm -rf tmp
+unzip ${SYSAP_TEMPDIR}_${RANDOM}_ABB.img
+# Manipulate images/root.tgz
+mkdir root_tgz
+mv images/root.tgz root_tgz/
+cd root_tgz/
+gzip -d root.tgz
+tar -vxpf root.tar ./etc/gnupg/pubring.gpg ./root/.ssh/authorized_keys
+tar --delete -f root.tar ./etc/gnupg/pubring.gpg ./root/.ssh/authorized_keys
+ls -la ./root/.ssh/authorized_keys
+cat ${ROOTKEY} >> ./root/.ssh/authorized_keys
+ls -la ./root/.ssh/authorized_keys
+gpg --ignore-time-conflict --homedir /tmp --primary-keyring ./etc/gnupg/pubring.gpg --import ${SIGNKEY}
+sha512sum ./etc/gnupg/pubring.gpg ./root/.ssh/authorized_keys > check_signature
+gpg --detach-sign check_signature
+gpg --ignore-time-conflict --homedir /tmp --primary-keyring ./etc/gnupg/pubring.gpg --verify check_signature.sig || exit 1
+rm -f check_signature check_signature.sig
+echo "starte tar root.tar"
+tar -vupf root.tar ./etc/gnupg/pubring.gpg ./root/.ssh/authorized_keys
+gzip -9 root.tar
+cp root.tar.gz ../images/root.tgz
+cd ..
+#
+# Manipulate images/rescue.tgz
+mkdir rescue_tgz
+mv images/rescue.tgz rescue_tgz/
+cd rescue_tgz/
+gzip -d rescue.tgz
+tar -vxpf rescue.tar ./etc/gnupg/pubring.gpg ./root/.ssh/authorized_keys
+tar --delete -f rescue.tar ./etc/gnupg/pubring.gpg ./root/.ssh/authorized_keys
+ls -la ./root/.ssh/authorized_keys
+cat ${ROOTKEY} >> ./root/.ssh/authorized_keys
+ls -la ./root/.ssh/authorized_keys
+gpg --ignore-time-conflict --homedir /tmp --primary-keyring ./etc/gnupg/pubring.gpg --import ${SIGNKEY}
+sha512sum ./etc/gnupg/pubring.gpg ./root/.ssh/authorized_keys > check_signature
+gpg --detach-sign check_signature
+gpg --ignore-time-conflict --homedir /tmp --primary-keyring ./etc/gnupg/pubring.gpg --verify check_signature.sig || exit 1
+rm -f check_signature check_signature.sig
+echo "starte tar rescue.tar"
+tar -vupf rescue.tar ./etc/gnupg/pubring.gpg ./root/.ssh/authorized_keys
+gzip -9 rescue.tar
+cp rescue.tar.gz ../images/rescue.tgz
+cd ..
+#
+# sign Firmware
+for directory in "images" "sbin" "META-INF" ; do cd "$directory" ; rm -f checksum* ; sha512sum * > "checksum2" ; gpg --detach-sign checksum2 ; cd .. ; done
+rm -f checksum*
+sha512sum META-INF/checksum2 images/checksum2 sbin/checksum2 > checksum2
+gpg --detach-sign checksum2
+# make new zip
+SYSAPTYPE="$(grep '^Product' META-INF/MANIFEST.MF | awk '{print$NF}')"
+FIRMWVERS="$(grep '^Firmware-Version' META-INF/MANIFEST.MF | awk '{print$NF}')"
+FIRMWBUILD="$(grep '^Build-Revision' META-INF/MANIFEST.MF | awk '{print$NF}')"
+zip -r -9 ${SYSAPTYPE}_${FIRMWVERS}_${FIRMWBUILD}-${CRAKER}.img META-INF images sbin checksum2 checksum2.sig
+mkdir -p ${CRAKPATH}/${SYSAPTYPE}/
+mv ${CRAKPATH}/${SYSAP_TEMPDIR}/${RANDOM} ${CRAKPATH}/${SYSAPTYPE}/${FIRMWVERS}
+mv ${CRAKPATH}/${SYSAP_TEMPDIR}/downloads/download_${SYSAP_TEMPDIR}_${RANDOM}_abb.zip ${CRAKPATH}/${SYSAPTYPE}/${FIRMWVERS}/download_${SYSAPTYPE}_${FIRMWVERS}_${FIRMWBUILD}-abb.zip
+mv ${CRAKPATH}/${SYSAPTYPE}/${FIRMWVERS}/${SYSAP_TEMPDIR}_${RANDOM}_ABB.img ${CRAKPATH}/${SYSAPTYPE}/${FIRMWVERS}/${SYSAPTYPE}_${FIRMWVERS}_${FIRMWBUILD}-abb.img
